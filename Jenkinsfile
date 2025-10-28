@@ -1,6 +1,8 @@
 pipeline{
     agent {label "dev"};
     
+
+    
     stages{
         stage("Code Clone"){
             steps{
@@ -39,4 +41,33 @@ pipeline{
             }
         }
     }
+
+post {
+    success{
+        emailext(
+        subject: "Build successful",
+        body: "Good news: your build was successful!!",
+        to: 'souravpatel65@gmail.com'
+            )
+        
+        
+    }
+    failure{
+        emailext(
+        subject: "Build failed",
+        body: "Bad mews: your build failed",
+        to: 'souravpatel65@gmail.com'
+            
+            
+            )
+        
+        
+        
+        
+        
+        
+    }
+    
 }
+}
+
