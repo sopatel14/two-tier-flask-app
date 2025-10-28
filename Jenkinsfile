@@ -55,7 +55,7 @@ post {
     failure{
         emailext(
         subject: "Build failed",
-        body: "Bad mews: your build failed",
+        body: "Bad mews: your build was failed",
         to: 'souravpatel65@gmail.com'
             
             
