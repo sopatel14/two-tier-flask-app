@@ -11,7 +11,7 @@ pipeline{
         }
         stage("Trivy File system sacn"){
             steps{
-                sh "trivy fs . -results.json"
+                sh "trivy fs . -o results.json"
     
                 
             }
