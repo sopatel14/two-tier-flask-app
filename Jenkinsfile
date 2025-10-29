@@ -9,6 +9,14 @@ pipeline{
                 git url: "https://github.com/sopatel14/two-tier-flask-app.git", branch: "master"
             }
         }
+        stage("Trivy File system sacn"){
+            steps{
+                sh "trivy fs . -results.json"
+    
+                
+            }
+
+        }
         
         stage("Build"){
             steps{
