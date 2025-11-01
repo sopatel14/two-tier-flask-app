@@ -42,13 +42,18 @@ pipeline{
             
         }
         
-        stage("Deploy"){
-            steps{
-                sh 'docker compose down || true'
-                sh 'docker compose up -d'
-            }
+        stage("Deploy") {
+            steps {
+        dir("${WORKSPACE}") {
+            echo "🛠️ Deploying the Flask + MySQL stack..."
+            sh "docker compose down || true"
+            sh "docker compose pull flask-app"
+            sh "docker compose up -d --build"
+            sh "docker ps"
         }
     }
+}
+
 
 post {
     success{
