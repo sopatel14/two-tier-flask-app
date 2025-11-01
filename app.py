@@ -1,6 +1,7 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_mysqldb import MySQL
+from MySQLdb import OperationalError
 
 app = Flask(__name__)
 
@@ -22,16 +23,19 @@ def init_db():
             message TEXT
         );
         ''')
-        mysql.connection.commit()  
+        mysql.connection.commit()
         cur.close()
 
 @app.route('/')
 def hello():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT message FROM messages')
-    messages = cur.fetchall()
-    cur.close()
-    return render_template('index.html', messages=messages)
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT message FROM messages')
+        messages = cur.fetchall()
+        cur.close()
+        return render_template('index.html', messages=messages)
+    except OperationalError:
+        return "Database connection failed", 500
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -42,7 +46,17 @@ def submit():
     cur.close()
     return jsonify({'message': new_message})
 
+# ✅ Healthcheck route for Docker
+@app.route('/health')
+def health():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT 1")
+        cur.close()
+        return jsonify(status="healthy"), 200
+    except Exception as e:
+        return jsonify(status="unhealthy", error=str(e)), 500
+
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
-
